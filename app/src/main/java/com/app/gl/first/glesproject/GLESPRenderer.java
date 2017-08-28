@@ -36,12 +36,7 @@ import app.gl.first.glesproject.android.util.TextResourceReader;
 
 public class GLESPRenderer implements Renderer {
 
-    float[] tableVertices = {
-            -0.5f, -0.5f,
-            0.5f,0.5f,
-            -0.5f,0.5f,
-            9f, 0f
-    };
+
     float[] tableVerticesTriangles = {
             // board triangle 1
             -0.5f   ,   -0.5f,
@@ -59,7 +54,20 @@ public class GLESPRenderer implements Renderer {
 
             // mallets
              0f     ,   -0.25f,
-             0f     ,    0.25f
+             0f     ,    0.25f,
+
+            // puck
+             0f     ,    0f,
+
+            //border
+            -0.55f  ,   -0.55f,
+             0.55f  ,    0.55f,
+            -0.55f  ,    0.55f,
+
+
+            -0.55f  ,   -0.55f,
+             0.55f  ,   -0.55f,
+             0.55f  ,    0.55f,
     };
 
     private static final int BYTES_PER_FLOAT = 4;
@@ -117,6 +125,12 @@ public class GLESPRenderer implements Renderer {
     public void onDrawFrame(GL10 gl10) {
 
         glClear(GL_COLOR_BUFFER_BIT);
+
+
+        glUniform4f(uColorLocation,0.5f,0.5f,0.5f,1.0f);
+        glDrawArrays(GL_TRIANGLES,11,6);
+
+
         glUniform4f(uColorLocation,1.0f,1.0f,1.0f,1.0f);
         glDrawArrays(GL_TRIANGLES,0,6);
 
@@ -128,5 +142,10 @@ public class GLESPRenderer implements Renderer {
 
         glUniform4f(uColorLocation,1.0f,0.0f,0.0f,1.0f);
         glDrawArrays(GL_POINTS,9,1);
+
+        glUniform4f(uColorLocation,0.0f,0.6f,0.0f,1.0f);
+        glDrawArrays(GL_POINTS,10,1);
+
+
     }
 }
