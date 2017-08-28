@@ -28,7 +28,8 @@ public class GLESPMainActivity extends AppCompatActivity {
         if(supportsES2){
             glSurfaceView.setEGLContextClientVersion(2);
 
-            glSurfaceView.setRenderer(new GLESPRenderer());
+            glSurfaceView.setRenderer(new GLESPRenderer(this));
+            rendererSet = true;
         }
         else{
             Toast.makeText(this,"Device does not support OpenGL ES 2.0",Toast.LENGTH_LONG).show();
