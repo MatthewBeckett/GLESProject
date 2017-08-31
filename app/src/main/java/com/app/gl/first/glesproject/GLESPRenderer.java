@@ -4,7 +4,6 @@ package com.app.gl.first.glesproject;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_LINES;
 import static android.opengl.GLES20.GL_POINTS;
-import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.GL_TRIANGLE_FAN;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -12,8 +11,6 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
-import static android.opengl.GLES20.glGetUniformLocation;
-import static android.opengl.GLES20.glUniform4f;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
@@ -38,12 +35,31 @@ import app.gl.first.glesproject.android.util.TextResourceReader;
 public class GLESPRenderer implements Renderer {
 
     float[] tableVerticesTriangles = {
+
+
+            //border
+             0.00f  ,    0.00f,   0.2f   ,   0.2f    ,   0.2f,
+            -0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
+             0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
+             0.55f  ,    0.55f,   0.2f   ,   0.2f    ,   0.2f,
+            -0.55f  ,    0.55f,   0.2f   ,   0.2f    ,   0.2f,
+            -0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
+
             // board triangle fan
              0.0f   ,    0.0f,   1.0f   ,   1.0f    ,   1.0f,
+
             -0.5f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
+             0.0f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
+
              0.5f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
+             0.5f   ,    0.0f,   0.7f   ,   0.7f    ,   0.7f,
+
              0.5f   ,    0.5f,   0.7f   ,   0.7f    ,   0.7f,
+             0.0f   ,    0.5f,   0.7f   ,   0.7f    ,   0.7f,
+
             -0.5f   ,    0.5f,   0.7f   ,   0.7f    ,   0.7f,
+            -0.5f   ,    0.0f,   0.7f   ,   0.7f    ,   0.7f,
+
             -0.5f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
 
             // center line
@@ -57,15 +73,9 @@ public class GLESPRenderer implements Renderer {
             // puck
              0.0f   ,    0.0f,    0.8f   ,   0.2f    ,   0.8f,
 
-            //border
-            -0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
-             0.55f  ,    0.55f,   0.2f   ,   0.2f    ,   0.2f,
-            -0.55f  ,    0.55f,   0.2f   ,   0.2f    ,   0.2f,
 
 
-            -0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
-             0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
-             0.55f  ,    0.55f,   0.2f   ,   0.2f    ,   0.2f,
+
     };
 
     private static final int BYTES_PER_FLOAT = 4;
@@ -132,17 +142,17 @@ public class GLESPRenderer implements Renderer {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glDrawArrays(GL_TRIANGLES,11,6);
-
         glDrawArrays(GL_TRIANGLE_FAN,0,6);
 
-        glDrawArrays(GL_LINES,6,2);
+        glDrawArrays(GL_TRIANGLE_FAN,6,10);
 
-        glDrawArrays(GL_POINTS,8,1);
+        glDrawArrays(GL_LINES,16,2);
 
-        glDrawArrays(GL_POINTS,9,1);
+        glDrawArrays(GL_POINTS,18,1);
 
-        glDrawArrays(GL_POINTS,10,1);
+        glDrawArrays(GL_POINTS,19,1);
+
+        glDrawArrays(GL_POINTS,20,1);
 
     }
 }
