@@ -11,6 +11,8 @@ import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
+import static android.opengl.GLES20.glGetUniformLocation;
+import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
@@ -18,6 +20,7 @@ import static android.opengl.GLES20.glViewport;
 import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 
+import static android.opengl.Matrix.orthoM;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -39,36 +42,36 @@ public class GLESPRenderer implements Renderer {
 
             //border
              0.00f  ,    0.00f,   0.2f   ,   0.2f    ,   0.2f,
-            -0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
-             0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
-             0.55f  ,    0.55f,   0.2f   ,   0.2f    ,   0.2f,
-            -0.55f  ,    0.55f,   0.2f   ,   0.2f    ,   0.2f,
-            -0.55f  ,   -0.55f,   0.2f   ,   0.2f    ,   0.2f,
+            -0.55f  ,   -0.85f,   0.2f   ,   0.2f    ,   0.2f,
+             0.55f  ,   -0.85f,   0.2f   ,   0.2f    ,   0.2f,
+             0.55f  ,    0.85f,   0.2f   ,   0.2f    ,   0.2f,
+            -0.55f  ,    0.85f,   0.2f   ,   0.2f    ,   0.2f,
+            -0.55f  ,   -0.85f,   0.2f   ,   0.2f    ,   0.2f,
 
             // board triangle fan
              0.0f   ,    0.0f,   1.0f   ,   1.0f    ,   1.0f,
 
-            -0.5f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
-             0.0f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
+            -0.5f   ,   -0.8f,   0.7f   ,   0.7f    ,   0.7f,
+             0.0f   ,   -0.8f,   0.7f   ,   0.7f    ,   0.7f,
 
-             0.5f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
+             0.5f   ,   -0.8f,   0.7f   ,   0.7f    ,   0.7f,
              0.5f   ,    0.0f,   0.7f   ,   0.7f    ,   0.7f,
 
-             0.5f   ,    0.5f,   0.7f   ,   0.7f    ,   0.7f,
-             0.0f   ,    0.5f,   0.7f   ,   0.7f    ,   0.7f,
+             0.5f   ,    0.8f,   0.7f   ,   0.7f    ,   0.7f,
+             0.0f   ,    0.8f,   0.7f   ,   0.7f    ,   0.7f,
 
-            -0.5f   ,    0.5f,   0.7f   ,   0.7f    ,   0.7f,
+            -0.5f   ,    0.8f,   0.7f   ,   0.7f    ,   0.7f,
             -0.5f   ,    0.0f,   0.7f   ,   0.7f    ,   0.7f,
 
-            -0.5f   ,   -0.5f,   0.7f   ,   0.7f    ,   0.7f,
+            -0.5f   ,   -0.8f,   0.7f   ,   0.7f    ,   0.7f,
 
             // center line
             -0.5f   ,    0.0f,   1.0f   ,   0.0f    ,   0.0f,
              0.5f   ,    0.0f,   1.0f   ,   0.0f    ,   1.0f,
 
             // mallets
-             0.0f   ,   -0.25f,   1.0f   ,   0.0f    ,   0.0f,
-             0.0f   ,    0.25f,   0.0f   ,   0.0f    ,   1.0f,
+             0.0f   ,   -0.4f,   1.0f   ,   0.0f    ,   0.0f,
+             0.0f   ,    0.4f,   0.0f   ,   0.0f    ,   1.0f,
 
             // puck
              0.0f   ,    0.0f,    0.8f   ,   0.2f    ,   0.8f,
@@ -87,6 +90,9 @@ public class GLESPRenderer implements Renderer {
     private int aPositionLocation;
     private static final int POSITION_COMPONENT_COUNT = 2;
 
+    private static final String U_MATRIX = "u_Matrix";
+    private final float[] projectionMatrix = new float[16];
+    private int uMatrixLocation;
 
     private static final String A_COLOR = "a_Color";
     private static final int COLOR_COMPONENT_COUNT = 3;
@@ -130,17 +136,31 @@ public class GLESPRenderer implements Renderer {
         glVertexAttribPointer(aColorLocation,COLOR_COMPONENT_COUNT,GL_FLOAT,false,STRIDE,vertexData);
 
         glEnableVertexAttribArray(aColorLocation);
+
+        uMatrixLocation = glGetUniformLocation(program,U_MATRIX);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
+
         glViewport(0,0,width,height);
+        final float aspectRatio = width > height ?
+                (float) width / (float) height :
+                (float) height / (float) width ;
+
+        if(width > height){
+            orthoM(projectionMatrix,0,-aspectRatio,aspectRatio,-1f,1f,-1f,1f);
+        }else{
+            orthoM(projectionMatrix,0,-1f,1f,-aspectRatio,aspectRatio,-1f,1f);
+        }
     }
 
     @Override
     public void onDrawFrame(GL10 gl10) {
 
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUniformMatrix4fv(uMatrixLocation,1,false,projectionMatrix,0);
 
         glDrawArrays(GL_TRIANGLE_FAN,0,6);
 
