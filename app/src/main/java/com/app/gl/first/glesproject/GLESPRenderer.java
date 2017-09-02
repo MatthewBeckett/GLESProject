@@ -20,7 +20,10 @@ import static android.opengl.GLES20.glViewport;
 import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 
+import static android.opengl.Matrix.multiplyMM;
 import static android.opengl.Matrix.orthoM;
+import static android.opengl.Matrix.setIdentityM;
+import static android.opengl.Matrix.translateM;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -29,6 +32,7 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import app.gl.first.glesproject.android.util.MatrixHelper;
 import app.gl.first.glesproject.android.util.TextResourceReader;
 
 /**
@@ -80,6 +84,8 @@ public class GLESPRenderer implements Renderer {
 
 
     };
+
+    private final float[] modalMatrix = new float[16];
 
     private static final int BYTES_PER_FLOAT = 4;
     private final FloatBuffer vertexData;
@@ -143,16 +149,15 @@ public class GLESPRenderer implements Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
 
+        MatrixHelper.perspectiveM(projectionMatrix,45,(float)width/(float)height,1f,10f);
         glViewport(0,0,width,height);
-        final float aspectRatio = width > height ?
-                (float) width / (float) height :
-                (float) height / (float) width ;
+        setIdentityM(modalMatrix,0);
+        translateM(modalMatrix,0,0f,0f,-2f);
 
-        if(width > height){
-            orthoM(projectionMatrix,0,-aspectRatio,aspectRatio,-1f,1f,-1f,1f);
-        }else{
-            orthoM(projectionMatrix,0,-1f,1f,-aspectRatio,aspectRatio,-1f,1f);
-        }
+        final float[] temp= new float[16];
+        multiplyMM(temp,0,projectionMatrix,0,modalMatrix,0);
+        System.arraycopy(temp,0,projectionMatrix,0,temp.length);
+
     }
 
     @Override
