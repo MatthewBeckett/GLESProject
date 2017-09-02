@@ -22,6 +22,7 @@ import android.opengl.GLSurfaceView.Renderer;
 
 import static android.opengl.Matrix.multiplyMM;
 import static android.opengl.Matrix.orthoM;
+import static android.opengl.Matrix.rotateM;
 import static android.opengl.Matrix.setIdentityM;
 import static android.opengl.Matrix.translateM;
 
@@ -152,7 +153,8 @@ public class GLESPRenderer implements Renderer {
         MatrixHelper.perspectiveM(projectionMatrix,45,(float)width/(float)height,1f,10f);
         glViewport(0,0,width,height);
         setIdentityM(modalMatrix,0);
-        translateM(modalMatrix,0,0f,0f,-2f);
+        translateM(modalMatrix,0,0f,0f,-2.5f);
+        rotateM(modalMatrix,0,-60f,1f,0f,0f);
 
         final float[] temp= new float[16];
         multiplyMM(temp,0,projectionMatrix,0,modalMatrix,0);
